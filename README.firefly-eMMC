@@ -1,0 +1,117 @@
+README.firefly-eMMC
+Trevor Woerner
+July 2015
+
+
+Table of Contents
+=================
+
+	I.   Introduction
+	II.  Building Your Own Image
+	III. Uploading update.img To The Firefly's eMMC
+	IV.  Miscellaneous
+	V.   Footnotes
+
+
+I. Introduction
+===============
+
+The Firefly-RK3288 (http://en.t-firefly.com/en/firenow/firefly_rk3288/) is
+an SBC designed around the quad-core Rockchip RK3288 SoC. The RK3288 is one
+of the first SoCs to be based on ARM's Cortex-A17 (formerly Cortex-A12)
+processor. The Firefly-RK3288 was released in 2014 and currently comes in 2
+flavours:
+	standard:  2GB DDR3 and 16GB eMMC
+	plus:      4GB DDR3 and 32GB eMMC
+
+As is not uncommon in the embedded Linux world, at the time of release the
+manufacturer produced an SDK which contained a fork of the Linux kernel
+with un-upstreamable tweaks which it deemed were necessary to get it to
+interoperate properly with Rockchip's "mask ROM"[1]. The "mask ROM" code first
+looks in the eMMC, then on the uSD, for an image containing special items
+packaged in special ways. If it finds what it is looking for, it will then
+attempt to boot the image.
+
+Rockchip has created a website [2] where it has placed the binary-only tool
+necessary to upload your image into the Firefly's eMMC (Firmware Upgrade
+Tool). It has also placed a number of images, documents, and source code at
+this location too.
+
+
+II. Building Your Own Image
+===========================
+
+Amongst other things, this OpenEmbedded BSP contains recipes to allow a
+developer to build an image based on the code provided by the vendor.
+
+Assuming you have your OpenEmbedded build environment already correctly setup
+(see the README if you need some tips and pointers), set your MACHINE to
+"firefly-emmc" and proceed to build your image (e.g. core-image-minimal). You
+can build any image you wish (core-image-x11, core-image-sato, etc.) After a
+successful build, your machine's deploy folder (by default:
+tmp/deploy/images/firefly-emmc) will contain a file named "update.img". Use
+Rockchip's "Firmware Upgrade Tool" to upload this "update.img" to the Firefly
+in order to have your image boot from your device's eMMC.
+
+
+III. Uploading update.img To The Firefly's eMMC
+===============================================
+
+In order to upload your "update.img" to the Firefly's eMMC you will need:
+	1. a micro USB cable[3]
+	2. an "update.img" file produced by this BSP
+	3. Rockchip's binary-only Firmware Upgrade Tool
+	4. a serial cable + console
+
+Steps:
+
+Connect your development host to the Firefly by plugging the microUSB cable
+into the development host at one end, and the Firefly's OTG port on the other
+[3].
+
+Connect your serial cable to the pins just above the IR receiver on the
+Firefly. Run whatever console software you prefer (e.g. minicom, kermit, etc.)
+and make sure your setup is working by booting your Firefly and seeing
+messages appear on the console.
+
+From [2] download the "Firmware Upgrade Tool". Click on the "Linux" icon which
+will take you to a Goople Drive from which you can download a file named
+"Linux_Upgrade_Tool_vX.Y.tar.gz" (where "X.Y" is the version string). Unpack
+this tarball and you'll find the "upgrade_tool" executable.
+
+On the Firefly, press and hold the button labelled "RECOVERY" (beside the USB
+connector labeled "HOST1"). While continuing to hold the "RECOVERY" button,
+press and release the button labelled "RESET" (located beside the MIC). Then
+watch the messages on the console. Once you see a message on the console
+saying "rockusb key pressed." you can now release the "RECOVERY" button; your
+Firefly is now ready to receive your "update.img" image through the OTG port
+via the "upgrade_tool" executable.
+
+As root, run:
+	# upgrade_tool uf /path/to/your/update.img
+
+The upgrade_tool will then automatically reboot your Firefly, upload your
+image, verify the upload, then reboot the Firefly to run your newly-uploaded
+image.
+
+
+IV. Miscellaneous
+=================
+
+You can also use the same "upgrade_tool uf ..." command to upload the "Flash"
+files under "Images" found at [2] by following the same procedure in section
+III but replacing "/path/to/your/update.img" with "/path/to/downloaded/image".
+
+
+V. Footnotes
+============
+
+[1] Therefore, in addition to the code released by Rockchip, there are also
+    several community efforts to try to get upstream u-boot and the upstream
+    Linux kernel to boot on a Firefly.
+
+[2] http://en.t-firefly.com/en/firenow/firefly_rk3288/download/
+
+[3] Don't be confused by the fact you'll be plugging this cable into the
+    Firefly's OTG connector. YOU DO NOT NEED ANY SPECIAL USB OTG CABLE. Just a
+    plain, regular, micro-USB cable will suffice.
