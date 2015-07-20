@@ -14,7 +14,7 @@ DEPENDS = "mkbootimg-native rk2918-tools-native firefly-emmc-bootloader firefly-
 FIRMWARE_VER  ?= "1.0"
 MANUFACTURER  ?= "OpenEmbedded"
 MACHINE_MODEL ?= "${MACHINE}"
-CMDLINE       ?= "console=ttyS2 earlyprintk root=/dev/block/mtd/by-name/linuxroot rw rootfstype=ext4 init=/sbin/init"
+CMDLINE       ?= "console=tty0 console=ttyS2 earlyprintk root=/dev/block/mtd/by-name/linuxroot rw rootfstype=ext4 init=/sbin/init"
 MTDPARTS      ?= "0x00008000@0x00002000(resource),0x000080000@0x0000A000(boot),-@0x00012000(linuxroot)"
 
 PACKAGE_FILE = "package-file"
