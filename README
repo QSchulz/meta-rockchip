@@ -10,19 +10,19 @@ This layer depends on:
 
   {
   	URI: git://git.openembedded.org/bitbake
-	branch: fido
+	branch: master, fido
 
   	AND
 
   	URI: git://git.openembedded.org/openembedded-core
   	layers: meta
-	branch: fido
+	branch: master, fido
   }
 
   OR
 
   URI: git://git.yoctoproject.org/poky
-  branch: fido
+  branch: master, fido
 
 
 Patches
@@ -37,8 +37,7 @@ Table of Contents
 =================
 
   I. Configure yocto/oe environment
- II. Building a second level bootloader based on kexec
-III. Booting your device
+ II. Rockchip boot overview
 
 I. Configure yocto/oe environment
 ========================================
@@ -76,44 +75,23 @@ At the end of a successful build, you should have an image in
 /path/to/yocto/build/tmp/deploy/<MACHINE>/<IMAGE_NAME>. See Yocto
 manual for more details.
 
-II. Building a second level bootloader based on kexec
-=====================================================
+II. Rockchip boot overview
+==========================
 
-This BSP contains "Petitboot", a kexec-based second leval bootloader.
-As all available bootloaders provided by Rockchip are very limited and do not allow
-to boot from a block device containing a file system or from the network, we decided
-to use Petitboot, which just needs a minimalistic kernel to work.
+Rockchip SoCs have a "mask ROM" which contains a very minimal, fail-safe boot
+program which is the first thing the chip runs when it is first powered on, or
+when it comes out of reset. This boot program first tries to find something to
+boot from the attached eMMC storage. If it can't find anything to boot in eMMC
+it will then try to find something to boot from the attached uSD card (labeled
+as TFCARD on the firefly).
 
-See https://www.kernel.org/pub/linux/kernel/people/geoff/petitboot/petitboot.html
+If you want to build your own image you need to do one of the following:
+1. load your image to a uSD card and then upload a minimal image to eMMC which
+   will transfer control to the uSD card (and boot whatever it finds there)
+2. upload your image to the eMMC
+3. load your image to a uSD card and then erase or corrupt the eMMC so the
+   boot program will look at the uSD card
 
-In a terminal, just type the following command:
-~/yocto $ bitbake linux-petitboot
-
-At the end of a successful build, you should have an image
-/path/to/yocto/build/tmp/deploy/<MACHINE>/RK3XPetitbootLoader-<MACHINE>.bin.
-This image is already to the right format, so you can directly flash it as a
-kernel image to a Rockchip device with upgrade_tool.
-
-III. Booting your device
-========================
-
-Petitboot allows you to boot a kernel from the EMMC, an SDCARD, an USB storage
-device or even tthe network (it just needs to be supported by the Linux kernel).
-In order to do so, you need to put a configuration file at the root of the target
-device. Petitboot supports differents kind of configuration files, in this example
-we will an SDCARD and a kboot configuration file.
-
-Copy your kernel image and your dtb under the /boot directory, on your device.
-Then create a kboot.conf in / and add the following content:
-
-linux-next from sdcard='/boot/zImage dtb=/boot/<MACHINE>.dtb root=/dev/mmcblk0p2 rootwait console=ttyS2,115200 earlyprintk'
-linux-next from tftp='tftp://192.168.0.5/zImage dtb=tftp://192.168.0.5/<MACHINE>.dtb root=/dev/mmcblk0p2 rootwait console=ttyS2,115200 earlyprintk'
-# You can also use nfs
-# nfs='nfs://192.168.0.5/fire/boot/vmlinux.strip root=/dev/nfs rw ip=dhcp video=1080p fbcon=rotate:3'
-# Or http and nfs mixed together
-# http_nfs='http://192.168.0.5/ice/boot/vmlinux.strip nfs://192.168.0.5/ice/boot/initrd root=/dev/nfs'
-
-Then, plug your SDCARD into your Rockchip device and power on the board. If
-everything worked fine, Petitboot should be started automatically and list all 
-entries found in the configuration file.
-
+This OpenEmbedded BSP contains resources necessary to perform options 1 or 2.
+For option 1 please see README.uSD
+For option 2 using a Firefly please see README.firefly-eMMC

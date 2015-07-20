@@ -1,0 +1,10 @@
+Index: git/Makefile
+===================================================================
+--- git.orig/Makefile
++++ git/Makefile
+@@ -10,4 +10,4 @@ TARGETS := afptool img_unpack img_maker
+ all: ${TARGETS}
+ 
+ clean:
+-	rm ${TARGETS}
++	rm -f ${TARGETS}
