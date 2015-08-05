@@ -27,4 +27,5 @@ do_install() {
 	install -d ${D}/${prefix}/bin
 	install -m 0755 ${S}/img_maker ${D}/${prefix}/bin/rk2918_img_maker
 	install -m 0755 ${S}/afptool ${D}/${prefix}/bin/rk2918_afptool
+	install -m 0755 ${S}/mkkrnlimg ${D}/${prefix}/bin/rk2918_mkkrnlimg
 }
