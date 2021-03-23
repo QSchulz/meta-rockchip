@@ -33,6 +33,34 @@ Status of supported boards:
 		radxarock
 		rock2-square
 
+Kernel configuration:
+--------------------
+When it comes to configuring the kernel, allow the user to choose between:
+	1. using the in-kernel defconfig
+	2. using an in-layer defconfig + config fragments
+
+The in-kernel defconfig is a very generic configuration meant to build a
+kernel that could (theoretically) be run on a wide variety of devices of
+the same architecture. I.e. a kernel built for one aarch64 machine (e.g.
+the Qualcomm-based DragonBoard 410c) could be used without modification on
+a completely different aarch64 machine (e.g. an Amlogic-based Odroid-C4). As
+you can imagine, the in-kernel configuration generates a very large kernel.
+Currently the in-kernel defconfig produces a kernel that is roughly 12MB.
+
+The in-layer defconfig + config fragments is meant to trim down the kernel
+configuration to remove all the hardware settings that aren't relevant to the
+specific MACHINE being built. I.e. a kernel built for the rock-pi-4b wouldn't
+include, for example, Qualcomm-specific drivers or code.
+
+Currently, option #2 is only available for the following MACHINE(s):
+	- rock-pi-4b
+
+The user indicates their intent via the RK_KERNEL_CONFIG_TYPE variable. If
+the user does nothing, the default behaviour is to use the in-kernel
+defconfig. If the user sets
+	RK_KERNEL_CONFIG_TYPE = "inlayer"
+then the in-layer defconfig + config fragments will be used.
+
 Maintenance:
 -----------
 	Please send pull requests, patches, comments, or questions to the

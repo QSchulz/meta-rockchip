@@ -1,3 +1,11 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}:${THISDIR}/linux-yocto:"
+
+SRC_URI_append = " ${@bb.utils.contains( \
+	'RK_KERNEL_CONFIG_TYPE', 'inlayer', ' \
+	file://defconfig \
+	file://rockchip-kmeta;type=kmeta;name=rockchip-kmeta;destsuffix=rockchip-kmeta', \
+	'', d)}"
+
 COMPATIBLE_MACHINE_marsboard-rk3066 = "marsboard-rk3066"
 COMPATIBLE_MACHINE_rock2-square = "rock2-square"
 COMPATIBLE_MACHINE_radxarock = "radxarock"
