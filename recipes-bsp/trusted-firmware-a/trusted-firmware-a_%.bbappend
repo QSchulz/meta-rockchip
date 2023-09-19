@@ -12,6 +12,7 @@ SRC_URI += "\
     file://0001-plat_macros.S-Use-compatible-.asciz-asm-directive.patch \
     file://0001-pmu-Do-not-mark-already-defined-functions-as-weak.patch \
 "
+SRC_URI:append:rk3588 = " add-rk3588.patch"
 
 
 # code bloats with clang and results in error below now
