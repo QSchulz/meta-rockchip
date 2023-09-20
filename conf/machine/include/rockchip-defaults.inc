@@ -19,3 +19,6 @@ XSERVER = " \
 
 # misc
 SERIAL_CONSOLES ?= "1500000;ttyS2"
+
+# On Aarch64, TF-A is necessary for booting a Linux kernel
+ATF_DEPENDS:aarch64 = "1"

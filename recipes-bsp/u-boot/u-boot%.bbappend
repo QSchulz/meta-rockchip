@@ -11,12 +11,6 @@ DEPENDS:append = " python3-pyelftools-native"
 
 ATF_DEPENDS ??= ""
 
-EXTRA_OEMAKE:append:rk3399 = " BL31=${DEPLOY_DIR_IMAGE}/${TFA_BUILD_TARGET}-${TFA_PLATFORM}.elf"
-ATF_DEPENDS:rk3399 = " trusted-firmware-a:do_deploy"
-EXTRA_OEMAKE:append:rk3328 = " BL31=${DEPLOY_DIR_IMAGE}/${TFA_BUILD_TARGET}-${TFA_PLATFORM}.elf"
-ATF_DEPENDS:rk3328 = " trusted-firmware-a:do_deploy"
-EXTRA_OEMAKE:append:px30 = " BL31=${DEPLOY_DIR_IMAGE}/${TFA_BUILD_TARGET}-${TFA_PLATFORM}.elf"
-ATF_DEPENDS:px30 = " trusted-firmware-a:do_deploy"
-
-do_compile[depends] .= "${ATF_DEPENDS}"
+EXTRA_OEMAKE:append = "${@" BL31=${DEPLOY_DIR_IMAGE}/${TFA_BUILD_TARGET}-${TFA_PLATFORM}.elf" if d.getVar("ATF_DEPENDS") else ""}"
+do_compile[depends] .= "${@" trusted-firmware-a:do_deploy" if d.getVar("ATF_DEPENDS") else ""}"
 
